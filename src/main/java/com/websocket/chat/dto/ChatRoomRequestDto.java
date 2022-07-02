@@ -1,10 +1,10 @@
-package com.websocket.chat;
+package com.websocket.chat.dto;
 
 import lombok.Getter;
 import lombok.Setter;
 
 @Setter
 @Getter
-public class ChatRequestDto {
+public class ChatRoomRequestDto {
     private String name;
 }
