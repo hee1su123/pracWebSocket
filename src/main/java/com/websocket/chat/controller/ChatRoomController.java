@@ -4,7 +4,11 @@ package com.websocket.chat.controller;
 import com.websocket.chat.domain.ChatRoom;
 import com.websocket.chat.dto.ChatRoomRequestDto;
 import com.websocket.chat.service.ChatRoomService;
+import com.websocket.security.domain.LoginInfo;
+import com.websocket.security.jwt.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -17,11 +21,21 @@ import java.util.List;
 public class ChatRoomController {
 
     private final ChatRoomService chatRoomService;
+    private final JwtTokenProvider jwtTokenProvider;
+
+    @GetMapping("/user")
+    @ResponseBody
+    public LoginInfo getUserInfo() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String name = auth.getName();
+        return LoginInfo.builder()
+                .name(name)
+                .token(jwtTokenProvider.generateToken(name)).build();
+    }
 
     // 채팅 리스트 화면
     @GetMapping("/room")
     public String rooms(Model model) {
-        System.out.println("rooms");
         return "/chat/roomList";
     }
 
@@ -29,7 +43,6 @@ public class ChatRoomController {
     @GetMapping("/rooms")
     @ResponseBody
     public List<ChatRoom> roomList() {
-        System.out.println("roomList");
         return chatRoomService.findAllRoom();
     }
 
@@ -37,14 +50,12 @@ public class ChatRoomController {
     @PostMapping("/room")
     @ResponseBody
     public ChatRoom createRoom(@RequestBody ChatRoomRequestDto requestDto) {
-        System.out.println("createRoom");
         return chatRoomService.createRoom(requestDto);
     }
 
     // 채팅방 입장 화면
     @GetMapping("/room/enter/{roomId}")
     public String roomDetail(Model model, @PathVariable String roomId) {
-        System.out.println("roomDetail");
         model.addAttribute("roomId", roomId);
         return "/chat/roomdetail";
     }
@@ -53,7 +64,6 @@ public class ChatRoomController {
     @GetMapping("/room/{roomId}")
     @ResponseBody
     public ChatRoom roomInfo(@PathVariable String roomId) {
-        System.out.println("roomInfo");
         return chatRoomService.findRoomById(roomId);
     }
 }

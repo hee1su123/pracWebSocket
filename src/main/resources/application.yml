@@ -6,6 +6,8 @@ spring:
       enabled: false
   freemarker:
     cache: false
+  jwt:
+    secret: hesukey
 #  datasource:
 #    url: jdbc:h2:tcp://localhost/~/websocket
 #    username: sa
